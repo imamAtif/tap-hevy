@@ -201,6 +201,19 @@ class HevyStream(RESTStream[int]):
             msg = self.response_error_message(response)
             raise FatalAPIError(msg)
 
+    def get_page_size(self, max_size: int = 10) -> int:
+        """Return configured page size clamped to API hard limit."""
+        try:
+            configured = int(self.config.get("page_size", DEFAULT_PAGE_SIZE))
+        except (TypeError, ValueError):
+            configured = DEFAULT_PAGE_SIZE
+        # Clamp to valid range 1..max_size
+        if configured < 1:
+            return 1
+        if configured > max_size:
+            return max_size
+        return configured
+
     def get_url_params(
         self,
         context: Context | None,
@@ -212,5 +225,5 @@ class HevyStream(RESTStream[int]):
         else:
             params["page"] = 1
         # Default pageSize; subclasses may override max
-        params["pageSize"] = DEFAULT_PAGE_SIZE
+        params["pageSize"] = self.get_page_size(max_size=10)
         return params

@@ -28,8 +28,7 @@ class TapHevy(Tap):
             secret=True,
             title="API Key",
             description=(
-                "Hevy API key (UUID) from https://hevy.com/settings?developer. "
-                "Requires Hevy Pro."
+                "Hevy API key (UUID) from https://hevy.com/settings?developer. Requires Hevy Pro."
             ),
         ),
         th.Property(
@@ -62,6 +61,16 @@ class TapHevy(Tap):
             "user_agent",
             th.StringType,
             description="User agent string for HTTP requests.",
+        ),
+        th.Property(
+            "page_size",
+            th.IntegerType,
+            default=10,
+            description=(
+                "Number of records per page for paginated streams. "
+                "Max 10 for most endpoints, 100 for exercise_templates. "
+                "Tap clamps to hard limits."
+            ),
         ),
     ).to_dict()
 

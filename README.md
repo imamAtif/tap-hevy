@@ -70,7 +70,8 @@ plugins:
   "start_date": "2024-01-01T00:00:00Z",
   "api_url": "https://api.hevyapp.com",
   "request_timeout": 30,
-  "max_retries": 5
+  "max_retries": 5,
+  "page_size": 10
 }
 ```
 
@@ -79,8 +80,9 @@ plugins:
 | `api_key` | Yes | - | Yes | Hevy API key (UUID) from https://hevy.com/settings?developer |
 | `api_url` | No | `https://api.hevyapp.com` | No | Base URL for Hevy API |
 | `start_date` | No | - | No | Earliest date for incremental streams (`workout_events`). ISO-8601. Also used as `since` fallback. |
-| `request_timeout` | No | `30` | No | HTTP timeout in seconds |
+| `request_timeout` | No | `30` | No | HTTP timeout in seconds (default 30, not a hard limit - configurable) |
 | `max_retries` | No | `5` | No | Max retries for 429 / 5xx / connection errors |
+| `page_size` | No | `10` | No | Records per page. Configurable, clamped to Hevy hard limits: 10 for most streams, 100 for `exercise_templates` |
 | `user_agent` | No | `singer-sdk/<version>` | No | Custom User-Agent |
 
 Run with Meltano:
@@ -185,7 +187,7 @@ Example output (`workout_events`):
 
 * **Pro only**: All `/v1/*` endpoints require Hevy Pro + API key via `api-key` header (UUID).
 * **No list filter except `workout_events`**: Only `/v1/workouts/events?since=` supports server-side incremental filtering. Other list endpoints only support `page`/`pageSize`; no `updated_at` filter, so full scan is required for refresh.
-* **`pageSize` caps differ**: 10 for workouts, routines, routine folders, body measurements, workout events; **100** for exercise templates (tap uses 10 everywhere for simplicity, within limits).
+* **`pageSize` caps differ (hard limits)**: 10 for workouts, routines, routine folders, body measurements, workout events; **100** for exercise templates. Tap default is 10 and configurable via `page_size` (clamped to hard limits), so `30` is the default timeout and `10` is the default page size - neither is a hard limit.
 * **`workouts` pagination order**: `GET /v1/workouts` returns oldest→newest; `GET /v1/workouts/events` returns newest→oldest. Events feed is intended for delta sync.
 * **`exercise_history` quirks**: Returns array `exercise_history` with per-set rows (no per-entry id, no pagination metadata, no `page_count`); each entry is a set within a workout, identified by `workout_id` + `workout_start_time` + metrics. No natural primary key - tap uses composite `exercise_template_id`/`workout_id`/`workout_start_time` (duplicates possible if same workout has identical sets).
 * **Detail endpoints not needed**: List payloads already contain full nested objects; no N+1 calls for `workouts/{id}` etc.

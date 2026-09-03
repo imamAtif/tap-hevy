@@ -128,7 +128,7 @@ class WorkoutsStream(HevyStream):
     ) -> dict[str, t.Any]:
         params: dict[str, t.Any] = {}
         params["page"] = next_page_token if next_page_token is not None else 1
-        params["pageSize"] = 10
+        params["pageSize"] = self.get_page_size(max_size=10)
         return params
 
 
@@ -173,7 +173,7 @@ class WorkoutEventsStream(HevyStream):
     ) -> dict[str, t.Any]:
         params: dict[str, t.Any] = {}
         params["page"] = next_page_token if next_page_token is not None else 1
-        params["pageSize"] = 10
+        params["pageSize"] = self.get_page_size(max_size=10)
         # Use state bookmark or start_date
         starting = self.get_starting_timestamp(context)
         if starting:
@@ -255,7 +255,7 @@ class RoutinesStream(HevyStream):
     ) -> dict[str, t.Any]:
         params: dict[str, t.Any] = {}
         params["page"] = next_page_token if next_page_token is not None else 1
-        params["pageSize"] = 10
+        params["pageSize"] = self.get_page_size(max_size=10)
         return params
 
 
@@ -291,9 +291,7 @@ class ExerciseTemplatesStream(HevyStream):
     ) -> dict[str, t.Any]:
         params: dict[str, t.Any] = {}
         params["page"] = next_page_token if next_page_token is not None else 1
-        # Max 100 for this endpoint, use 10 for consistency but allow 100
-        # Use 10 by default, but if user wants more we could use config
-        params["pageSize"] = 10
+        params["pageSize"] = self.get_page_size(max_size=100)
         return params
 
 
@@ -320,7 +318,7 @@ class RoutineFoldersStream(HevyStream):
     ) -> dict[str, t.Any]:
         params: dict[str, t.Any] = {}
         params["page"] = next_page_token if next_page_token is not None else 1
-        params["pageSize"] = 10
+        params["pageSize"] = self.get_page_size(max_size=10)
         return params
 
 
@@ -360,7 +358,7 @@ class BodyMeasurementsStream(HevyStream):
     ) -> dict[str, t.Any]:
         params: dict[str, t.Any] = {}
         params["page"] = next_page_token if next_page_token is not None else 1
-        params["pageSize"] = 10
+        params["pageSize"] = self.get_page_size(max_size=10)
         return params
 
 
