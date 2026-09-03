@@ -7,7 +7,7 @@ name = "tap-hevy"
 version = "0.1.0"
 description = "Singer tap for Hevy, built with the Meltano Singer SDK."
 readme = "README.md"
-authors = [{ name = "tap-hevy" }]
+authors = [{ name = "Atif Imam", email = "mohd.atifimam@hotmail.com" }]
 keywords = ["ELT", "Hevy", "Singer", "Meltano"]
 classifiers = [
     "Intended Audience :: Developers",
