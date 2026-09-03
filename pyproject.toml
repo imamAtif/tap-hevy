@@ -25,8 +25,8 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/example/tap-hevy"
-Repository = "https://github.com/example/tap-hevy"
+Homepage = "https://github.com/imamAtif/tap-hevy"
+Repository = "https://github.com/imamAtif/tap-hevy"
 
 [project.scripts]
 tap-hevy = "tap_hevy.tap:TapHevy.cli"
