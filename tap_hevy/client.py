@@ -33,11 +33,25 @@ class HevyPageNumberPaginator(BaseAPIPaginator[int]):
     def __init__(self, start_value: int = 1, *args: t.Any, **kwargs: t.Any) -> None:
         super().__init__(start_value, *args, **kwargs)
 
-    @override
-    def has_more(self, response: requests.Response) -> bool:
+    def _get_data(self, response: requests.Response) -> dict | None:
+        # Cache parsed json on response to avoid double parse per page
+        cached = getattr(response, "_hevy_data", None)
+        if cached is not None:
+            return cached  # type: ignore[no-any-return]
         try:
             data = response.json()
         except Exception:
+            return None
+        try:
+            response._hevy_data = data  # type: ignore[attr-defined]
+        except Exception:
+            pass
+        return data  # type: ignore[no-any-return]
+
+    @override
+    def has_more(self, response: requests.Response) -> bool:
+        data = self._get_data(response)
+        if data is None:
             return False
 
         page = data.get("page")
@@ -53,8 +67,10 @@ class HevyPageNumberPaginator(BaseAPIPaginator[int]):
     @override
     def get_next(self, response: requests.Response) -> int | None:
         # Value is current page number; next is +1 if has_more
+        data = self._get_data(response)
+        if data is None:
+            return None
         try:
-            data = response.json()
             page = data.get("page")
             page_count = data.get("page_count")
             if page is None or page_count is None:
@@ -102,12 +118,24 @@ class HevyStream(RESTStream[int]):
 
     @property
     def timeout(self) -> int:
-        return int(self.config.get("request_timeout", DEFAULT_TIMEOUT))
+        try:
+            return int(self.config.get("request_timeout", DEFAULT_TIMEOUT))
+        except (TypeError, ValueError):
+            return DEFAULT_TIMEOUT
 
     @override
     def backoff_max_tries(self) -> int:
         # Allow config override
-        return int(self.config.get("max_retries", 5))
+        try:
+            value = int(self.config.get("max_retries", 5))
+        except (TypeError, ValueError):
+            return 5
+        # Clamp to sensible range
+        if value < 0:
+            return 0
+        if value > 20:
+            return 20
+        return value
 
     @override
     def backoff_wait_generator(self) -> t.Generator[float, None, None]:

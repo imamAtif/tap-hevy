@@ -122,15 +122,6 @@ class WorkoutsStream(HevyStream):
         ),
     ).to_dict()
 
-    @override
-    def get_url_params(
-        self, context: Context | None, next_page_token: int | None
-    ) -> dict[str, t.Any]:
-        params: dict[str, t.Any] = {}
-        params["page"] = next_page_token if next_page_token is not None else 1
-        params["pageSize"] = self.get_page_size(max_size=10)
-        return params
-
 
 class WorkoutEventsStream(HevyStream):
     """Workout events - incremental via since param."""
@@ -221,12 +212,6 @@ class WorkoutEventsStream(HevyStream):
                 row["event_timestamp"] = row.get("deleted_at")
         return row
 
-    @override
-    def get_new_paginator(self):
-        from tap_hevy.client import HevyPageNumberPaginator
-
-        return HevyPageNumberPaginator(start_value=1)
-
 
 class RoutinesStream(HevyStream):
     """Routines stream."""
@@ -248,15 +233,6 @@ class RoutinesStream(HevyStream):
             th.ArrayType(ROUTINE_EXERCISE_OBJECT),
         ),
     ).to_dict()
-
-    @override
-    def get_url_params(
-        self, context: Context | None, next_page_token: int | None
-    ) -> dict[str, t.Any]:
-        params: dict[str, t.Any] = {}
-        params["page"] = next_page_token if next_page_token is not None else 1
-        params["pageSize"] = self.get_page_size(max_size=10)
-        return params
 
 
 class ExerciseTemplatesStream(HevyStream):
@@ -312,15 +288,6 @@ class RoutineFoldersStream(HevyStream):
         th.Property("created_at", th.DateTimeType),
     ).to_dict()
 
-    @override
-    def get_url_params(
-        self, context: Context | None, next_page_token: int | None
-    ) -> dict[str, t.Any]:
-        params: dict[str, t.Any] = {}
-        params["page"] = next_page_token if next_page_token is not None else 1
-        params["pageSize"] = self.get_page_size(max_size=10)
-        return params
-
 
 class BodyMeasurementsStream(HevyStream):
     """Body measurements stream."""
@@ -351,15 +318,6 @@ class BodyMeasurementsStream(HevyStream):
         th.Property("left_calf", th.NumberType),
         th.Property("right_calf", th.NumberType),
     ).to_dict()
-
-    @override
-    def get_url_params(
-        self, context: Context | None, next_page_token: int | None
-    ) -> dict[str, t.Any]:
-        params: dict[str, t.Any] = {}
-        params["page"] = next_page_token if next_page_token is not None else 1
-        params["pageSize"] = self.get_page_size(max_size=10)
-        return params
 
 
 class ExerciseHistoryStream(HevyStream):
