@@ -1,0 +1,68 @@
+[build-system]
+requires = ["hatchling>=1,<2"]
+build-backend = "hatchling.build"
+
+[project]
+name = "tap-hevy"
+version = "0.1.0"
+description = "Singer tap for Hevy, built with the Meltano Singer SDK."
+readme = "README.md"
+authors = [{ name = "tap-hevy" }]
+keywords = ["ELT", "Hevy", "Singer", "Meltano"]
+classifiers = [
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
+license = "Apache-2.0"
+requires-python = ">=3.10"
+dependencies = [
+    "singer-sdk~=0.54.5",
+    "requests~=2.32",
+]
+
+[project.urls]
+Homepage = "https://github.com/example/tap-hevy"
+Repository = "https://github.com/example/tap-hevy"
+
+[project.scripts]
+tap-hevy = "tap_hevy.tap:TapHevy.cli"
+
+[tool.hatch.build.targets.wheel]
+packages = ["tap_hevy"]
+
+[dependency-groups]
+dev = [{ include-group = "test" }]
+test = [
+    "pytest>=9",
+    "pytest-github-actions-annotate-failures>=0.4",
+    "singer-sdk[testing]",
+    "requests-mock",
+]
+typing = [
+    "mypy>=1.10",
+]
+
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = true
+warn_unused_configs = true
+ignore_missing_imports = true
+
+[tool.pytest]
+addopts = ["-ra"]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "C4", "UP"]
+ignore = []
+
+[tool.ruff.format]
+quote-style = "double"
